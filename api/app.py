@@ -16,6 +16,10 @@ from pydantic import BaseModel
 from openai import OpenAI
 
 # Import aimakerspace components
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from aimakerspace.text_utils import PDFLoader, CharacterTextSplitter
 from aimakerspace.vectordatabase import VectorDatabase
 from aimakerspace.openai_utils.embedding import EmbeddingModel as BaseEmbeddingModel
