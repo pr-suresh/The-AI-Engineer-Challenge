@@ -72,6 +72,8 @@ class ChatRequest(BaseModel):
         # Allow extra fields and be more flexible
         extra = "allow"
         validate_assignment = False
+        # Disable all validators temporarily
+        validate_all = False
 
 class UploadResponse(BaseModel):
     pdf_id: str
@@ -80,12 +82,14 @@ class UploadResponse(BaseModel):
 
     class Config:
         extra = "allow"
+        validate_all = False
 
 class PDFListResponse(BaseModel):
     pdfs: List[dict]
 
     class Config:
         extra = "allow"
+        validate_all = False
 
 # Helper function to create a unique PDF ID
 def create_pdf_id() -> str:
@@ -180,8 +184,9 @@ async def upload_pdf(
             raise HTTPException(status_code=400, detail="Only PDF files are allowed")
         
         # Validate API key format (basic check)
-        if not api_key.startswith('sk-'):
-            raise HTTPException(status_code=400, detail="Invalid OpenAI API key format")
+        # Temporarily comment out to test if this is causing the pattern matching error
+        # if not api_key.startswith('sk-'):
+        #     raise HTTPException(status_code=400, detail="Invalid OpenAI API key format")
         
         print("File and API key validation passed")
         
@@ -315,6 +320,16 @@ async def delete_pdf(pdf_id: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Test endpoint to verify basic functionality
+@app.post("/api/test")
+async def test_endpoint():
+    """Simple test endpoint to verify the API is working"""
+    try:
+        return {"message": "API is working correctly", "status": "success"}
+    except Exception as e:
+        print(f"Test endpoint error: {str(e)}")
+        return {"message": f"Error: {str(e)}", "status": "error"}
 
 # Health check endpoint
 @app.get("/api/health")
