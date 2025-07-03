@@ -30,11 +30,16 @@ class EmbeddingModel(BaseEmbeddingModel):
         from openai import AsyncOpenAI, OpenAI
         import openai
         
+        # Store the API key
         self.openai_api_key = api_key
+        self.embeddings_model_name = embeddings_model_name
+        
+        # Initialize clients with the provided API key
         self.async_client = AsyncOpenAI(api_key=api_key)
         self.client = OpenAI(api_key=api_key)
+        
+        # Set the global API key for compatibility
         openai.api_key = api_key
-        self.embeddings_model_name = embeddings_model_name
 
 # Initialize FastAPI application with a title
 app = FastAPI(title="PDF RAG Chat API")
@@ -94,50 +99,68 @@ def get_pdf_path(pdf_id: str) -> str:
 async def process_pdf(pdf_path: str, pdf_id: str, api_key: str) -> int:
     """Process PDF and create vector database index"""
     try:
+        print(f"=== PROCESS_PDF DEBUG ===")
         print(f"Processing PDF: {pdf_path}")
         print(f"PDF exists: {os.path.exists(pdf_path)}")
+        print(f"PDF size: {os.path.getsize(pdf_path) if os.path.exists(pdf_path) else 'N/A'} bytes")
         
         # Load PDF content
+        print("Creating PDFLoader...")
         pdf_loader = PDFLoader(pdf_path)
         print("PDFLoader created successfully")
         
+        print("Loading documents...")
         documents = pdf_loader.load_documents()
         print(f"Documents loaded: {len(documents)}")
+        print(f"First document length: {len(documents[0]) if documents else 0}")
         
         if not documents:
             raise ValueError("No text content found in PDF")
         
         # Split text into chunks
+        print("Creating text splitter...")
         splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        print("Text splitter created successfully")
+        
+        print("Splitting text into chunks...")
         chunks = splitter.split_texts(documents)
         print(f"Text split into {len(chunks)} chunks")
+        print(f"First chunk length: {len(chunks[0]) if chunks else 0}")
         
         # Create vector database with API key
+        print("Creating EmbeddingModel...")
         embedding_model = EmbeddingModel(api_key=api_key)
         print("EmbeddingModel created successfully")
         
+        print("Creating VectorDatabase...")
         vector_db = VectorDatabase(embedding_model)
         print("VectorDatabase created successfully")
         
         # Build vector database from chunks
+        print("Building vector database from chunks...")
         await vector_db.abuild_from_list(chunks)
         print("Vector database built successfully")
         
         # Store vector database
+        print("Storing vector database...")
         vector_databases[pdf_id] = {
             'vector_db': vector_db,
             'chunks': chunks,
             'chunk_count': len(chunks)
         }
         print(f"Vector database stored for PDF ID: {pdf_id}")
+        print("=== PROCESS_PDF COMPLETED ===")
         
         return len(chunks)
         
     except Exception as e:
+        print(f"=== PROCESS_PDF ERROR ===")
         print(f"Error in process_pdf: {str(e)}")
         print(f"Error type: {type(e)}")
+        print(f"Error args: {e.args}")
         import traceback
         traceback.print_exc()
+        print("=== END PROCESS_PDF ERROR ===")
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 # Upload PDF endpoint
@@ -148,6 +171,10 @@ async def upload_pdf(
 ):
     """Upload and index a PDF file"""
     try:
+        print(f"Starting upload process...")
+        print(f"File name: {file.filename}")
+        print(f"API key starts with sk-: {api_key.startswith('sk-')}")
+        
         # Validate file type
         if not file.filename.lower().endswith('.pdf'):
             raise HTTPException(status_code=400, detail="Only PDF files are allowed")
@@ -156,16 +183,24 @@ async def upload_pdf(
         if not api_key.startswith('sk-'):
             raise HTTPException(status_code=400, detail="Invalid OpenAI API key format")
         
+        print("File and API key validation passed")
+        
         # Create unique PDF ID
         pdf_id = create_pdf_id()
         pdf_path = get_pdf_path(pdf_id)
+        print(f"PDF ID: {pdf_id}")
+        print(f"PDF Path: {pdf_path}")
         
         # Save uploaded file
+        print("Saving uploaded file...")
         with open(pdf_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+        print("File saved successfully")
         
         # Process and index the PDF
+        print("Starting PDF processing...")
         chunks_count = await process_pdf(pdf_path, pdf_id, api_key)
+        print(f"PDF processing completed. Chunks: {chunks_count}")
         
         return UploadResponse(
             pdf_id=pdf_id,
@@ -175,11 +210,13 @@ async def upload_pdf(
         
     except HTTPException:
         # Re-raise HTTP exceptions as-is
+        print("HTTPException caught and re-raising")
         raise
     except Exception as e:
         # Log the full error for debugging
         print(f"Upload error: {str(e)}")
         print(f"Error type: {type(e)}")
+        print(f"Error args: {e.args}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
