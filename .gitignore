@@ -1,6 +1,14 @@
 # Project Specific
 uv.lock
 
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
