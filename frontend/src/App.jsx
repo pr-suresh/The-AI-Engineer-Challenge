@@ -27,7 +27,9 @@ function App() {
   const loadPdfs = async () => {
     try {
       const res = await fetch('/api/pdfs')
+      console.log(res.json())
       const data = await res.json()
+
       setPdfs(data.pdfs)
       if (data.pdfs.length > 0 && !selectedPdf) {
         setSelectedPdf(data.pdfs[0].id)
