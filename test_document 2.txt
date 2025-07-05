@@ -1,0 +1,42 @@
+Test PDF Document for RAG Chat System
+
+This is a test document for the PDF RAG chat system. It contains information about artificial intelligence and related technologies.
+
+Artificial Intelligence (AI)
+Artificial intelligence is a branch of computer science that aims to create intelligent machines that can perform tasks that typically require human intelligence. These tasks include learning, reasoning, problem-solving, perception, and language understanding.
+
+Machine Learning
+Machine learning is a subset of AI that enables computers to learn and improve from experience without being explicitly programmed. It focuses on developing algorithms that can access data and use it to learn for themselves.
+
+Deep Learning
+Deep learning uses neural networks with multiple layers to model complex patterns in data. It has been particularly successful in areas like image recognition, natural language processing, and speech recognition.
+
+Natural Language Processing (NLP)
+Natural language processing helps computers understand, interpret, and generate human language. It enables applications like chatbots, language translation, and sentiment analysis.
+
+Computer Vision
+Computer vision enables machines to interpret and understand visual information from the world. It's used in applications like facial recognition, autonomous vehicles, and medical image analysis.
+
+Robotics
+Robotics combines AI with mechanical engineering to create autonomous systems that can interact with the physical world. This includes industrial robots, service robots, and autonomous vehicles.
+
+The Future of AI
+The future of AI holds great promise for solving complex problems in healthcare, education, transportation, and many other fields. However, it also raises important questions about ethics, privacy, and the impact on society.
+
+Key Challenges in AI Development
+1. Data Quality and Availability
+2. Computational Resources
+3. Ethical Considerations
+4. Bias and Fairness
+5. Explainability and Transparency
+6. Safety and Security
+
+Applications of AI
+- Healthcare: Diagnosis, drug discovery, personalized medicine
+- Finance: Fraud detection, algorithmic trading, risk assessment
+- Education: Personalized learning, automated grading, tutoring systems
+- Transportation: Autonomous vehicles, traffic optimization, logistics
+- Entertainment: Recommendation systems, content generation, gaming
+- Manufacturing: Quality control, predictive maintenance, automation
+
+This document serves as a comprehensive test case for the PDF RAG chat system, covering various aspects of artificial intelligence that can be used to test the system's ability to understand and respond to questions about AI topics. 
