@@ -27,7 +27,25 @@ function App() {
   const loadPdfs = async () => {
     try {
       const res = await fetch('/api/pdfs')
-      const data = await res.json()
+      console.log('Response status:', res.status)
+      console.log('Response headers:', res.headers)
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
+      }
+      
+      const text = await res.text()
+      console.log('Raw response text:', text)
+      
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError)
+        console.error('Raw text that failed to parse:', text)
+        throw new Error(`Invalid JSON response: ${parseError.message}`)
+      }
+      
       console.log('PDFs loaded:', data)  //This is for debugging
 
       setPdfs(data.pdfs)
