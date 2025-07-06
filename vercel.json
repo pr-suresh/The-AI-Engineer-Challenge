@@ -1,20 +1,9 @@
 {
   "version": 2,
-  "functions": {
-    "api/app.py": {
-      "runtime": "@vercel/python"
-    }
-  },
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/app.py"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/(.*)", "destination": "/api/app.py" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 } 
