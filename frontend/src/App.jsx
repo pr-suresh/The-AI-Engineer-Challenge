@@ -28,7 +28,7 @@ function App() {
     try {
       const res = await fetch('/api/pdfs')
       const data = await res.json()
-      --console.log('PDFs loaded:', data)  //This is for debugging
+      console.log('PDFs loaded:', data)  //This is for debugging
 
       setPdfs(data.pdfs)
       if (data.pdfs.length > 0 && !selectedPdf) {
