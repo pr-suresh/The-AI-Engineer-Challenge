@@ -53,10 +53,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create uploads directory if it doesn't exist
-UPLOADS_DIR = "uploads"
-if not os.path.exists(UPLOADS_DIR):
-    os.makedirs(UPLOADS_DIR)
+# Use temporary directory for uploads in Vercel environment
+import tempfile
+UPLOADS_DIR = tempfile.gettempdir()
 
 # Global storage for vector databases (in production, use a proper database)
 vector_databases = {}
@@ -198,9 +197,13 @@ async def upload_pdf(
         
         # Save uploaded file
         print("Saving uploaded file...")
-        with open(pdf_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print("File saved successfully")
+        try:
+            with open(pdf_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            print("File saved successfully")
+        except OSError as e:
+            print(f"Error saving file: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
         
         # Process and index the PDF
         print("Starting PDF processing...")
@@ -232,13 +235,13 @@ async def list_pdfs():
     """List all uploaded and indexed PDFs"""
     pdfs = []
     for pdf_id, data in vector_databases.items():
-        pdf_path = get_pdf_path(pdf_id)
-        if os.path.exists(pdf_path):
-            pdfs.append({
-                "id": pdf_id,
-                "filename": f"{pdf_id}.pdf",
-                "chunks_count": data['chunk_count']
-            })
+        # In Vercel, files might not persist between function calls
+        # So we return all indexed PDFs regardless of file existence
+        pdfs.append({
+            "id": pdf_id,
+            "filename": f"{pdf_id}.pdf",
+            "chunks_count": data['chunk_count']
+        })
     
     return PDFListResponse(pdfs=pdfs)
 
